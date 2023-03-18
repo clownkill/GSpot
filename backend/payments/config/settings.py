@@ -18,12 +18,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #3rd party
+    # 3rd party
     'django_extensions',
     'drf_spectacular',
     'rest_framework',
 
-    #local
+    # local
     'apps.payment_accounts',
     'apps.transactions',
 ]
@@ -36,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -60,7 +61,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
-    'default': env.dj_db_url('DATABASE_URL', 'postgres://...')
+    'default': env.dj_db_url('DATABASE_URL', 'postgres://...'),
 }
 
 
@@ -99,12 +100,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
+    'EXCEPTION_HANDLER': 'rollbar.contrib.django_rest_framework.post_exception_handler',
 }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'GSpot Payments API',
     'DESCRIPTION': 'API for game store payments service',
-    'VERSION': '1.0.0'
+    'VERSION': '1.0.0',
 }
+
+ROLLBAR = {
+    'access_token': env.str('rollbar_access_token'),
+    'environment': 'development' if DEBUG else 'production',
+    'code_version': '1.0',
+    'root': BASE_DIR,
+}
+
+MAX_BALANCE_DIGITS = 11
