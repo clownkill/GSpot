@@ -19,7 +19,7 @@ services:
     restart: always
     volumes:
       - ../2. Init Database:/docker-entrypoint-initdb.d
-      - .:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     env_file:
@@ -30,15 +30,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-      #restart: unless-stopped
-      
+            
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
-    
-    
 
-
- 
+volumes:
+  postgres_data:
